@@ -1,0 +1,65 @@
+name: refresh-and-deploy
+
+on:
+  schedule:
+    - cron: "17 * * * *"      # hourly, at :17 UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["site/**", "scripts/**", ".github/workflows/pages.yml"]
+
+permissions:
+  contents: write   # commit refreshed data back to main
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch prices (per-provider failures keep last good data, flagged stale)
+        run: python scripts/fetch_prices.py
+
+      - name: Rebuild pages
+        run: python scripts/build_pages.py
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name "price-bot"
+          git config user.email "price-bot@users.noreply.github.com"
+          git add site/data
+          if git diff --cached --quiet; then
+            echo "no data change"
+          else
+            git commit -m "data: hourly price refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push origin HEAD:main
+          fi
+
+      - name: Assemble publishable site (site/ only, no scripts or workflow)
+        run: |
+          rm -rf _site && mkdir _site
+          cp -r site/. _site/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: refresh
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

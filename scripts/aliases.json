@@ -1,0 +1,8 @@
+{
+  "_comment": "Manual match-key overrides. Per provider: raw model id -> key. '_global': computed key -> key.",
+  "_global": {},
+  "zen": {},
+  "nous": {},
+  "openrouter": {},
+  "commandcode": {}
+}

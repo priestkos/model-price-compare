@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>model/price :: Nous Portal</title>
+<meta name="description" content="Nous Portal model prices, cheapest first, with offers and price drops.">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2305070a'/%3E%3Ctext x='7' y='23' font-size='19' fill='%23c6ff3d'%3E%24%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/app.css">
+<script defer src="../assets/app.js"></script>
+</head>
+<body data-page="nous" data-base="../">
+<canvas id="rain" aria-hidden="true"></canvas>
+<div class="scan" aria-hidden="true"></div>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="../"><span class="mark">$</span><span>model<em>/</em>price</span></a>
+    <nav class="nav" aria-label="pages">
+      <a href="../">Overview</a>
+      <a href="../zen/">Zen</a>
+      <a href="../nous/" aria-current="page">Nous</a>
+      <a href="../openrouter/">OpenRouter</a>
+      <a href="../commandcode/">Cmd Code</a>
+      <a href="../common/">Common</a>
+    </nav>
+    <div class="tools">
+      <span class="pill"><span id="sync">syncing…</span></span>
+      <button class="btn" id="theme" type="button" aria-label="cycle colour theme">theme: signal</button>
+      <button class="btn" id="fx" type="button" aria-pressed="true" aria-label="toggle glyph rain and scanlines">fx</button>
+    </div>
+  </div>
+</header>
+<div id="live" class="live" role="status" aria-live="polite"></div>
+<main class="wrap">
+  <section class="hero rise-in">
+    <p class="kicker">provider 02 · nous</p>
+    <h1><span class="grad">Nous Portal</span><span class="cursor" aria-hidden="true"></span></h1>
+    <p class="lede" id="sub">loading…</p>
+    <div class="hero-meta"><span class="pill">Nous inference API price list</span></div>
+  </section>
+  <div class="layout rise-in d1">
+    <section class="panel" aria-label="model table">
+      <div class="toolbar">
+        <label class="sr" for="q">search models</label>
+        <input id="q" type="search" placeholder="filter by name or id…" autocomplete="off">
+        <label class="sr" for="kind">model kind</label>
+        <select id="kind">
+          <option value="text">text / chat</option>
+          <option value="all">everything</option>
+          <option value="embedding">embeddings</option>
+          <option value="image">image / audio</option>
+        </select>
+        <div class="chips">
+          <button class="chip" type="button" data-chip="free" aria-pressed="false">free only</button>
+          <button class="chip" type="button" data-chip="offers" aria-pressed="false">offers &amp; drops</button>
+        </div>
+        <span class="count"><b id="shown">0</b> of <span id="count-total">0</span> shown</span>
+      </div>
+      <div id="stale" class="tag stale" hidden style="margin:10px 14px;display:block;white-space:normal"></div>
+      <p id="loading" class="empty">loading prices…</p>
+      <div class="tablewrap">
+        <table id="t"><thead></thead><tbody id="rows"></tbody></table>
+      </div>
+    </section>
+    <aside class="rail" aria-label="offers and price drops">
+      <h2>offers &amp; drops · <span id="rail-count">0</span></h2>
+      <ul id="rail-deals"></ul>
+      <div class="notes" id="rail-notes" hidden></div>
+      <div class="notes">
+        <p>Click a deal to filter the table to that model.</p>
+        <p>Blended = (3 × input + output) / 4, per 1M tokens. Sorted cheapest first by default.</p>
+      </div>
+    </aside>
+  </div>
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <span>Prices are list prices, USD per 1M tokens, taken from each provider's own pages or API. Check the provider before you commit spend.</span>
+    <span>refreshed hourly · GitHub Actions</span>
+  </div>
+</footer>
+</body>
+</html>
