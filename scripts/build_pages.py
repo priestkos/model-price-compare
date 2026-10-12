@@ -39,6 +39,7 @@ HEAD = '''<!DOCTYPE html>
 FOOT = '''<footer class="foot">
   <div class="wrap">
     <span>Prices are list prices, USD per 1M tokens, taken from each provider's own pages or API. Check the provider before you commit spend.</span>
+    <span>keys: <b>r</b> toggle fx · <b>t</b> cycle theme</span>
     <span>refreshed hourly · GitHub Actions</span>
   </div>
 </footer>
@@ -100,6 +101,19 @@ def provider_body(title: str, kicker: str, blurb: str) -> str:
         <span class="count"><b id="shown">0</b> of <span id="count-total">0</span> shown</span>
       </div>
       <div id="stale" class="tag stale" hidden style="margin:10px 14px;display:block;white-space:normal"></div>
+      <div class="legend" aria-label="legend">
+        <span><i class="sw edge lime"></i>row edge: provider offer</span>
+        <span><i class="sw edge mag"></i>row edge: price drop</span>
+        <span><b class="lg-t lime">◆ 50% off</b> discount set by the provider</span>
+        <span><b class="lg-t mag">▼ drop</b> / <b class="lg-t amber">▲ rise</b> price moved in the last 7 days</span>
+        <span><b class="lg-t cyan">new</b> listed in the last 7 days</span>
+        <span><b class="lg-t lime">free</b> $0 in and out</span>
+        <span><i class="sw spark"></i>trend: blended price history, dot = now</span>
+        <span><b class="lg-t dim">&gt;272K: $x</b> price above a context-length band</span>
+        <span><b class="lg-t dim">was $x</b> blended price before the offer</span>
+        <span><b class="lg-t dim">—</b> not published by the provider</span>
+        <span><b class="lg-t faint">grey row</b> not a text model (shown with “everything”)</span>
+      </div>
       <p id="loading" class="empty">loading prices…</p>
       <div class="tablewrap">
         <table id="t"><thead></thead><tbody id="rows"></tbody></table>
@@ -110,8 +124,9 @@ def provider_body(title: str, kicker: str, blurb: str) -> str:
       <ul id="rail-deals"></ul>
       <div class="notes" id="rail-notes" hidden></div>
       <div class="notes">
+        <p>Lists provider offers and price moves (lime = offer, magenta = drop, amber = rise). Plain free models are not deals, so they are left out; use “free only” to see them.</p>
         <p>Click a deal to filter the table to that model.</p>
-        <p>Blended = (3 × input + output) / 4, per 1M tokens. Sorted cheapest first by default.</p>
+        <p>Blended = (3 × input + output) / 4, per 1M tokens. Sorted cheapest first by default. Click any column header to sort; click again to reverse.</p>
       </div>
     </aside>
   </div>
@@ -141,7 +156,15 @@ def common_body() -> str:
         </div>
         <span class="count"><b id="shown">0</b> shown</span>
       </div>
-      <div class="legend"><span class="lg-best">cheapest provider for that model</span><span class="lg-offer">provider offer</span><span class="lg-drop">price drop</span><span>spread = how much cheaper the best is than the dearest</span></div>
+      <div class="legend" aria-label="legend">
+        <span><b class="lg-t lime">◆ $0.175</b> cheapest provider for that model</span>
+        <span><i class="sw edge lime"></i>row edge: spread ≥ 30%, provider choice matters</span>
+        <span><b class="lg-t lime">◆ 20% off</b> provider offer</span>
+        <span><b class="lg-t mag">▼ drop</b> price fell in the last 7 days</span>
+        <span><b class="lg-t cyan">free</b> free on that provider</span>
+        <span><b class="lg-t dim">— not listed</b> provider does not offer it</span>
+        <span><b class="lg-t dim">spread</b> how much cheaper the best is than the dearest</span>
+      </div>
       <p id="loading" class="empty">loading prices…</p>
       <div class="tablewrap">
         <table id="t"><thead></thead><tbody id="rows"></tbody></table>
@@ -151,7 +174,9 @@ def common_body() -> str:
       <h2>offers &amp; drops · <span id="rail-count">0</span></h2>
       <ul id="rail-deals"></ul>
       <div class="notes">
+        <p>Models with an offer or a price drop on at least one provider, biggest first. Follows the “on all four / two or more” toggle.</p>
         <p>Matched by model name across providers. A model counts only when the names resolve to the same key; the id line under each model shows that key.</p>
+        <p>Big price = blended (3 × input + output) / 4; small line = input and output, per 1M tokens.</p>
       </div>
     </aside>
   </div>
@@ -212,7 +237,11 @@ def home_body() -> str:
       </div>
     </a>
   </section>
-  <p class="notes" style="max-width:76ch;margin:18px 0 48px">Nothing on this board is hand-entered. Every page is rebuilt from the providers' own price data each hour by GitHub Actions, and the ladder is drawn from the same numbers as the tables.</p>
+  <div class="notes" style="max-width:86ch;margin:18px 0 0">
+    <p><b class="lg-t lime">live</b> the last hourly fetch succeeded · <b class="lg-t amber">stale</b> it failed and the table shows the last good data.</p>
+    <p><b>offers</b> models with a provider discount · <b>drops</b> models whose price fell in the last 7 days · <b>free</b> models at $0 in and out.</p>
+  </div>
+  <p class="notes" style="max-width:76ch;margin:12px 0 48px">Nothing on this board is hand-entered. Every page is rebuilt from the providers' own price data each hour by GitHub Actions, and the ladder is drawn from the same numbers as the tables.</p>
 </main>
 '''
 

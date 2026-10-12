@@ -53,7 +53,15 @@
         </div>
         <span class="count"><b id="shown">0</b> shown</span>
       </div>
-      <div class="legend"><span class="lg-best">cheapest provider for that model</span><span class="lg-offer">provider offer</span><span class="lg-drop">price drop</span><span>spread = how much cheaper the best is than the dearest</span></div>
+      <div class="legend" aria-label="legend">
+        <span><b class="lg-t lime">◆ $0.175</b> cheapest provider for that model</span>
+        <span><i class="sw edge lime"></i>row edge: spread ≥ 30%, provider choice matters</span>
+        <span><b class="lg-t lime">◆ 20% off</b> provider offer</span>
+        <span><b class="lg-t mag">▼ drop</b> price fell in the last 7 days</span>
+        <span><b class="lg-t cyan">free</b> free on that provider</span>
+        <span><b class="lg-t dim">— not listed</b> provider does not offer it</span>
+        <span><b class="lg-t dim">spread</b> how much cheaper the best is than the dearest</span>
+      </div>
       <p id="loading" class="empty">loading prices…</p>
       <div class="tablewrap">
         <table id="t"><thead></thead><tbody id="rows"></tbody></table>
@@ -63,7 +71,9 @@
       <h2>offers &amp; drops · <span id="rail-count">0</span></h2>
       <ul id="rail-deals"></ul>
       <div class="notes">
+        <p>Models with an offer or a price drop on at least one provider, biggest first. Follows the “on all four / two or more” toggle.</p>
         <p>Matched by model name across providers. A model counts only when the names resolve to the same key; the id line under each model shows that key.</p>
+        <p>Big price = blended (3 × input + output) / 4; small line = input and output, per 1M tokens.</p>
       </div>
     </aside>
   </div>
@@ -71,6 +81,7 @@
 <footer class="foot">
   <div class="wrap">
     <span>Prices are list prices, USD per 1M tokens, taken from each provider's own pages or API. Check the provider before you commit spend.</span>
+    <span>keys: <b>r</b> toggle fx · <b>t</b> cycle theme</span>
     <span>refreshed hourly · GitHub Actions</span>
   </div>
 </footer>

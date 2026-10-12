@@ -58,6 +58,19 @@
         <span class="count"><b id="shown">0</b> of <span id="count-total">0</span> shown</span>
       </div>
       <div id="stale" class="tag stale" hidden style="margin:10px 14px;display:block;white-space:normal"></div>
+      <div class="legend" aria-label="legend">
+        <span><i class="sw edge lime"></i>row edge: provider offer</span>
+        <span><i class="sw edge mag"></i>row edge: price drop</span>
+        <span><b class="lg-t lime">◆ 50% off</b> discount set by the provider</span>
+        <span><b class="lg-t mag">▼ drop</b> / <b class="lg-t amber">▲ rise</b> price moved in the last 7 days</span>
+        <span><b class="lg-t cyan">new</b> listed in the last 7 days</span>
+        <span><b class="lg-t lime">free</b> $0 in and out</span>
+        <span><i class="sw spark"></i>trend: blended price history, dot = now</span>
+        <span><b class="lg-t dim">&gt;272K: $x</b> price above a context-length band</span>
+        <span><b class="lg-t dim">was $x</b> blended price before the offer</span>
+        <span><b class="lg-t dim">—</b> not published by the provider</span>
+        <span><b class="lg-t faint">grey row</b> not a text model (shown with “everything”)</span>
+      </div>
       <p id="loading" class="empty">loading prices…</p>
       <div class="tablewrap">
         <table id="t"><thead></thead><tbody id="rows"></tbody></table>
@@ -68,8 +81,9 @@
       <ul id="rail-deals"></ul>
       <div class="notes" id="rail-notes" hidden></div>
       <div class="notes">
+        <p>Lists provider offers and price moves (lime = offer, magenta = drop, amber = rise). Plain free models are not deals, so they are left out; use “free only” to see them.</p>
         <p>Click a deal to filter the table to that model.</p>
-        <p>Blended = (3 × input + output) / 4, per 1M tokens. Sorted cheapest first by default.</p>
+        <p>Blended = (3 × input + output) / 4, per 1M tokens. Sorted cheapest first by default. Click any column header to sort; click again to reverse.</p>
       </div>
     </aside>
   </div>
@@ -77,6 +91,7 @@
 <footer class="foot">
   <div class="wrap">
     <span>Prices are list prices, USD per 1M tokens, taken from each provider's own pages or API. Check the provider before you commit spend.</span>
+    <span>keys: <b>r</b> toggle fx · <b>t</b> cycle theme</span>
     <span>refreshed hourly · GitHub Actions</span>
   </div>
 </footer>

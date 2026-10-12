@@ -178,7 +178,7 @@ def parse_or_style(provider: str, url: str, link_tpl: str) -> list[dict]:
         mid = m["id"]
         is_free = mid.endswith(":free")
         if is_free and not offer:
-            offer = {"label": "free tier", "pct": 100, "was": None}
+            offer = {"label": "free", "pct": 100, "was": None}  # one label everywhere: a free tier is a price, not a deal
         rows.append(row(
             id=mid, name=m.get("name"), key=match_key(provider, mid),
             ctx=m.get("context_length"), inp=inp, out=out,
@@ -501,7 +501,8 @@ def main() -> int:
             pm.update(ok=True, fetched=ts, count=len(rows), error=None,
                       ms=int(1000 * (time.time() - t0)),
                       text=sum(1 for r in rows if r["kind"] == "text"),
-                      offers=sum(1 for r in rows if r.get("offer")),
+                      # same definition as the site's rail: a plain free tier is not an offer
+                      offers=sum(1 for r in rows if r.get("offer") and r["offer"].get("label") != "free"),
                       drops=sum(1 for r in rows if r.get("drop")),
                       free=sum(1 for r in rows if r.get("free")))
             ok += 1

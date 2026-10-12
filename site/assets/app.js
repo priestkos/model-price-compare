@@ -218,7 +218,7 @@
       return rows;
     }
     function row(r) {
-      const cls = r.drop ? "drop" : r.offer ? "offer" : "";
+      const cls = r.drop ? "drop" : r.offer && r.offer.label !== "free" ? "offer" : "";
       const rowCls = r.kind !== "text" ? "muted" : "";
       const link = r.url ? `<a href="${esc(r.url)}" rel="noopener">${esc(r.name)}</a>` : esc(r.name);
       return `<tr class="${cls} ${rowCls}">
@@ -336,7 +336,7 @@
     };
     const render = () => {
       const rows = visible();
-      $("#rows").innerHTML = rows.length ? rows.map((m) => `<tr class="${m.best.length && m.n === 4 && m.spread >= 30 ? "hit" : ""}">
+      $("#rows").innerHTML = rows.length ? rows.map((m) => `<tr class="${m.spread >= 30 ? "hit" : ""}" ${m.spread >= 30 ? 'title="spread ≥ 30%: provider choice matters"' : ""}>
         <td class="name">${esc(m.name)}<div class="id">${esc(m.key)} · ${m.n}/4 providers</div></td>
         ${ORDER.map((p) => cell(m, p)).join("")}
         <td class="num best">${money(m.min)}<div class="id" style="max-width:none">${m.best.map((p) => PROVIDERS[p].short).join(", ")}</div></td>

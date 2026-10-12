@@ -109,11 +109,16 @@
       </div>
     </a>
   </section>
-  <p class="notes" style="max-width:76ch;margin:18px 0 48px">Nothing on this board is hand-entered. Every page is rebuilt from the providers' own price data each hour by GitHub Actions, and the ladder is drawn from the same numbers as the tables.</p>
+  <div class="notes" style="max-width:86ch;margin:18px 0 0">
+    <p><b class="lg-t lime">live</b> the last hourly fetch succeeded · <b class="lg-t amber">stale</b> it failed and the table shows the last good data.</p>
+    <p><b>offers</b> models with a provider discount · <b>drops</b> models whose price fell in the last 7 days · <b>free</b> models at $0 in and out.</p>
+  </div>
+  <p class="notes" style="max-width:76ch;margin:12px 0 48px">Nothing on this board is hand-entered. Every page is rebuilt from the providers' own price data each hour by GitHub Actions, and the ladder is drawn from the same numbers as the tables.</p>
 </main>
 <footer class="foot">
   <div class="wrap">
     <span>Prices are list prices, USD per 1M tokens, taken from each provider's own pages or API. Check the provider before you commit spend.</span>
+    <span>keys: <b>r</b> toggle fx · <b>t</b> cycle theme</span>
     <span>refreshed hourly · GitHub Actions</span>
   </div>
 </footer>
