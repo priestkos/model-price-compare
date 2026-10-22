@@ -24,7 +24,7 @@ class Money(unittest.TestCase):
         self.assertIsNone(fp.money("—"))
 
     def test_struck_price_reads_new_value(self):
-        # Command Code / Zen discount markup: <s>old</s>new
+        # Zen discount markup: <s>old</s>new
         self.assertEqual(fp.split_was("<s>$0.60</s>$0.30<button>+1</button>")[0], 0.30)
         self.assertEqual(fp.split_was("<s>$0.60</s>$0.30")[1], 0.60)
         # Zen markup: <del>old</del> new
@@ -48,7 +48,7 @@ class Matching(unittest.TestCase):
     def test_provider_prefixes_and_dots_collapse(self):
         a = fp.match_key("openrouter", "anthropic/claude-opus-5.5")
         b = fp.match_key("zen", "claude-opus-5-5")
-        c = fp.match_key("commandcode", "claude-opus-5-5")
+        c = fp.match_key("nous", "claude-opus-5-5")
         self.assertEqual(a, b)
         self.assertEqual(b, c)
 
@@ -59,7 +59,7 @@ class Matching(unittest.TestCase):
         self.assertTrue(free.endswith(":free"))
 
     def test_free_suffix_on_other_providers(self):
-        self.assertEqual(fp.match_key("commandcode", "laguna-s-2-1-free"), "laguna" + "s21" + ":free")
+        self.assertEqual(fp.match_key("zen", "laguna-s-2-1-free"), "laguna" + "s21" + ":free")
 
     def test_alias_override_wins(self):
         fp._aliases = {"zen": {"weird-id": "claudeopus55"}}

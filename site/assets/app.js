@@ -1,7 +1,7 @@
 /* model/price :: page logic. Vanilla JS, no build step.
    SECURITY: every provider-supplied string (model names, ids, notes, deal text) is
    passed through esc() before it is placed in innerHTML; all other interpolated values are numbers.
-   Pages: home | zen | nous | openrouter | commandcode | common
+   Pages: home | zen | nous | openrouter | common
    Reads ../data/*.json relative to the page (set via <body data-base>). */
 (function () {
   "use strict";
@@ -13,9 +13,9 @@
     zen: { name: "OpenCode Zen", short: "Zen" },
     nous: { name: "Nous Portal", short: "Nous" },
     openrouter: { name: "OpenRouter", short: "OpenRouter" },
-    commandcode: { name: "Command Code", short: "Cmd Code" },
   };
-  const ORDER = ["zen", "nous", "openrouter", "commandcode"];
+  const ORDER = ["zen", "nous", "openrouter"];
+  const PROVIDER_COUNT = ORDER.length;
 
   // ------------------------------------------------------------ utils
   const $ = (s, r = document) => r.querySelector(s);
@@ -295,10 +295,10 @@
     const doc = await load("common.json");
     const meta = META || {};
     const models = doc.models;
-    const state = { mode: "all4", q: "", offers: false, key: "best", dir: 1 };
-    const total4 = models.filter((m) => m.n === 4).length;
-    $("#sub").innerHTML = `Models offered by at least two of the four providers. <b>${total4}</b> are on all four. Prices per 1M tokens, blended 3 input : 1 output.`;
-    $("#c4").textContent = total4;
+    const state = { mode: "all3", q: "", offers: false, key: "best", dir: 1 };
+    const total3 = models.filter((m) => m.n === PROVIDER_COUNT).length;
+    $("#sub").innerHTML = `Models offered by at least two of the three providers. <b>${total3}</b> are on all three. Prices per 1M tokens, blended 3 input : 1 output.`;
+    $("#c3").textContent = total3;
     $("#c2").textContent = models.length;
     $("#synced-line").textContent = "updated " + ago(doc.fetched);
 
@@ -319,7 +319,7 @@
     const visible = () => {
       const q = state.q.trim().toLowerCase();
       const rows = models.filter((m) => {
-        if (state.mode === "all4" && m.n !== 4) return false;
+        if (state.mode === "all3" && m.n !== PROVIDER_COUNT) return false;
         if (state.offers && !Object.values(m.p).some((p) => p.drop || (p.offer && p.offer.label !== "free"))) return false;
         if (q && !m.name.toLowerCase().includes(q) && !m.key.includes(q)) return false;
         return true;
@@ -337,7 +337,7 @@
     const render = () => {
       const rows = visible();
       $("#rows").innerHTML = rows.length ? rows.map((m) => `<tr class="${m.spread >= 30 ? "hit" : ""}" ${m.spread >= 30 ? 'title="spread ≥ 30%: provider choice matters"' : ""}>
-        <td class="name">${esc(m.name)}<div class="id">${esc(m.key)} · ${m.n}/4 providers</div></td>
+        <td class="name">${esc(m.name)}<div class="id">${esc(m.key)} · ${m.n}/${PROVIDER_COUNT} providers</div></td>
         ${ORDER.map((p) => cell(m, p)).join("")}
         <td class="num best">${money(m.min)}<div class="id" style="max-width:none">${m.best.map((p) => PROVIDERS[p].short).join(", ")}</div></td>
         <td class="num">${m.spread ? m.spread + "%" : "—"}</td>
@@ -349,7 +349,7 @@
       });
     };
     const renderRail = () => {
-      const scope = models.filter((m) => state.mode !== "all4" || m.n === 4);  // rail follows the same mode as the table
+      const scope = models.filter((m) => state.mode !== "all3" || m.n === PROVIDER_COUNT);  // rail follows the same mode as the table
       const items = scope.filter((m) => Object.values(m.p).some((p) => p.drop || (p.offer && p.offer.label !== "free")))
         .map((m) => {
           const best = Math.max(0, ...Object.values(m.p).map((p) => (p.drop ? p.drop.pct : p.offer && p.offer.pct) || 0));
@@ -409,15 +409,15 @@
   async function homePage() {
     const meta = META || (await load("meta.json"));
     const common = await load("common.json");
-    const n4 = common.models.filter((m) => m.n === 4).length;
+    const n3 = common.models.filter((m) => m.n === PROVIDER_COUNT).length;
     const n2 = common.models.length;
-    const cheapest4 = common.models.filter((m) => m.n === 4).sort((a, b) => a.min - b.min)[0];
+    const cheapest3 = common.models.filter((m) => m.n === PROVIDER_COUNT).sort((a, b) => a.min - b.min)[0];
     const ladder = $("#ladder");
-    if (ladder) ladder.innerHTML = ladderSvg(common.models.filter((m) => m.n === 4));
-    if ($("#home-sync")) $("#home-sync").innerHTML = `<span class="led"></span>${Object.values(meta.providers).filter((p) => p.ok).length}/4 providers live · synced <b>${ago(meta.synced)}</b>`;
-    if ($("#c-n4")) $("#c-n4").textContent = n4;
+    if (ladder) ladder.innerHTML = ladderSvg(common.models.filter((m) => m.n === PROVIDER_COUNT));
+    if ($("#home-sync")) $("#home-sync").innerHTML = `<span class="led"></span>${Object.values(meta.providers).filter((p) => p.ok).length}/${PROVIDER_COUNT} providers live · synced <b>${ago(meta.synced)}</b>`;
+    if ($("#c-n3")) $("#c-n3").textContent = n3;
     if ($("#c-n2")) $("#c-n2").textContent = n2;
-    if (cheapest4 && $("#c-cheap")) $("#c-cheap").textContent = `${cheapest4.name} · ${money(cheapest4.min)} /1M blended · best at ${cheapest4.best.map((p) => PROVIDERS[p].short).join(", ")}`;
+    if (cheapest3 && $("#c-cheap")) $("#c-cheap").textContent = `${cheapest3.name} · ${money(cheapest3.min)} /1M blended · best at ${cheapest3.best.map((p) => PROVIDERS[p].short).join(", ")}`;
     for (const p of ORDER) {
       const pm = meta.providers[p] || {};
       const set = (k, v) => { const el = $("#" + p + "-" + k); if (el) el.textContent = v; };

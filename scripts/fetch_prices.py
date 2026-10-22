@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Fetch model prices from OpenCode Zen, Nous Portal, OpenRouter and Command Code.
+"""Fetch model prices from OpenCode Zen, Nous Portal, and OpenRouter.
 
 Standard library only. Writes, under site/data/:
-  zen.json, nous.json, openrouter.json, commandcode.json  per-provider tables
+  zen.json, nous.json, openrouter.json  per-provider tables
   common.json                                               cross-provider matches
   meta.json                                                 sync status per provider
   history.json                                              price change log (drives "price drop")
@@ -35,7 +35,6 @@ PROVIDERS = {
     "zen": {"name": "OpenCode Zen", "url": "https://opencode.ai/docs/zen/"},
     "nous": {"name": "Nous Portal", "url": "https://portal.nousresearch.com/"},
     "openrouter": {"name": "OpenRouter", "url": "https://openrouter.ai/models"},
-    "commandcode": {"name": "Command Code", "url": "https://commandcode.ai/models"},
 }
 
 
@@ -286,89 +285,6 @@ def fetch_zen() -> list[dict]:
     return list(rows.values())
 
 
-# --------------------------------------------------------------- Command Code
-CTX = re.compile(r"([\d.]+)\s*([KM])", re.I)
-
-
-def parse_ctx(s: str):
-    m = CTX.search(s or "")
-    if not m:
-        return None
-    return int(float(m.group(1)) * (1_000 if m.group(2).upper() == "K" else 1_000_000))
-
-
-def fetch_commandcode() -> list[dict]:
-    page = get("https://commandcode.ai/models")
-    trs = re.findall(r"<tr[^>]*data-slot=\"table-row\".*?</tr>", page, flags=re.S)
-    rows = []
-    for tr in trs:
-        cells = re.findall(r"<td[^>]*>(.*?)</td>", tr, flags=re.S)
-        if len(cells) < 7:
-            continue
-        c0 = cells[0]
-        a = re.search(r'href="/models/([^"]+)"[^>]*>(.*?)</a>', c0, flags=re.S)
-        if not a:
-            continue
-        slug, name = a.group(1), strip_tags(a.group(2))
-        deal = re.search(r'<a[^>]*href="[^"]*pricing-limits#([^"]+)"[^>]*title="([^"]*)"[^>]*>(.*?)</a>', c0, flags=re.S)
-        peak = re.search(r'title="(Off-peak[^"]*)"', c0)
-        sub = re.search(r'<span[^>]*>\s*(Decision model[^<]*)</span>', c0)
-
-        def price(cell):
-            body = re.sub(r"<button.*?</button>", "", cell, flags=re.S)
-            return split_was(body)
-
-        inp, wi = price(cells[3])
-        out, wo = price(cells[4])
-        cr, wc = price(cells[5])
-        cw, _ = price(cells[6])
-        bands = re.search(r'aria-label="[^"]*: (\d+) context price bands"', cells[3])
-        offer = None
-        if deal:
-            label = strip_tags(deal.group(3))
-            p = re.search(r"-?(\d+)%", label)
-            pct = int(p.group(1)) if p else (100 if label.lower() == "free" else None)
-            offer = {"label": (f"{pct}% off" if p else label.lower()), "pct": pct,
-                     "was": ({"in": wi, "out": wo, "cr": wc} if (wi or wo) else None),
-                     "detail": html.unescape(deal.group(2)),
-                     "link": "https://commandcode.ai/docs/resources/pricing-limits#" + deal.group(1)}
-        elif wi is not None or wo is not None:
-            ob, nb = blended(wi, wo), blended(inp, out)
-            pct = round(100 * (1 - nb / ob)) if ob and nb is not None else None
-            offer = {"label": f"{pct}% off" if pct else "discount", "pct": pct, "was": {"in": wi, "out": wo, "cr": wc}}
-        note = html.unescape(peak.group(1)) if peak else (strip_tags(sub.group(1)) if sub else None)
-        r = row(id=slug, name=name, key=match_key("commandcode", slug), ctx=parse_ctx(strip_tags(cells[1])),
-                inp=inp, out=out, cr=cr, cw=cw, offer=offer, note=note,
-                url=f"https://commandcode.ai/models/{slug}")
-        if bands:
-            r["tiered"] = {"bands": int(bands.group(1))}
-        if peak:
-            pk = re.search(r"peak \$([\d.]+) / \$([\d.]+)", note)
-            if pk:
-                r["peak"] = {"in": float(pk.group(1)), "out": float(pk.group(2))}
-        intel = strip_tags(cells[2])
-        r["score"] = float(intel) if re.fullmatch(r"[\d.]+", intel) else None
-        rows.append(r)
-    if not rows:
-        raise RuntimeError("commandcode: model table not found (page layout changed?)")
-    return rows
-
-
-def fetch_commandcode_deals() -> list[dict]:
-    """The 'DEAL ...' banner list on the pricing page (plan-credit boosts etc.)."""
-    try:
-        page = get("https://commandcode.ai/docs/resources/pricing-limits")
-    except RuntimeError:
-        return []
-    text = strip_tags(re.sub(r"<(script|style).*?</\1>", " ", page, flags=re.S))
-    deals = []
-    for m in re.finditer(r"DEAL (.*?)(?= DEAL |How it works\.)", text):
-        s = m.group(1).strip()
-        if 8 < len(s) < 220:
-            deals.append({"text": s})
-    return deals
-
-
 # ------------------------------------------------------------- history & drops
 def now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
@@ -480,8 +396,7 @@ def main() -> int:
     ts = now_iso()
     meta = read("meta.json", {"providers": {}})
     hist = read("history.json", {})
-    fetchers = {"zen": fetch_zen, "nous": fetch_nous,
-                "openrouter": fetch_openrouter, "commandcode": fetch_commandcode}
+    fetchers = {"zen": fetch_zen, "nous": fetch_nous, "openrouter": fetch_openrouter}
     tables: dict[str, list[dict]] = {}
     ok = 0
     for prov, fn in fetchers.items():
@@ -494,8 +409,6 @@ def main() -> int:
             annotate(hist, prov, rows, ts)
             rows.sort(key=lambda r: (r["blend"] is None, r["blend"] if r["blend"] is not None else 0, r["name"].lower()))
             doc = {"provider": prov, "name": PROVIDERS[prov]["name"], "fetched": ts, "models": rows}
-            if prov == "commandcode":
-                doc["deals"] = fetch_commandcode_deals()
             write(f"{prov}.json", doc)
             tables[prov] = rows
             pm.update(ok=True, fetched=ts, count=len(rows), error=None,
@@ -520,10 +433,12 @@ def main() -> int:
     write("common.json", {"fetched": ts, "providers": list(fetchers), "models": common})
     meta["synced"] = ts
     meta["schedule"] = "hourly at :17 UTC (GitHub Actions cron)"
+    meta["providers"].pop("commandcode", None)
     write("meta.json", meta)
+    hist.pop("commandcode", None)
     write("history.json", hist)
-    n4 = sum(1 for c in common if c["n"] == 4)
-    print(f"[ok]   common       {n4} on all four, {len(common)} on two or more")
+    n3 = sum(1 for c in common if c["n"] == 3)
+    print(f"[ok]   common       {n3} on all three, {len(common)} on two or more")
     return 0
 
 
