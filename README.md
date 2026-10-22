@@ -1,22 +1,21 @@
 # model/price
 
-Live, hourly price board for four model providers: **OpenCode Zen, Nous Portal, OpenRouter, Command Code**.
-Six static pages, sorted cheapest first, with offers and price drops flagged on a side rail.
+Live, hourly price board for three model providers: **OpenCode Zen, Nous Portal, OpenRouter**.
+Five static pages, sorted cheapest first, with offers and price drops flagged on a side rail.
 
 | Page | Path | What it shows |
 |---|---|---|
-| Overview | `/` | live counts per provider, the price ladder of models on all four |
+| Overview | `/` | live counts per provider, the price ladder of models on all three |
 | OpenCode Zen | `/zen/` | every Zen model, sortable, with offers |
 | Nous Portal | `/nous/` | every Nous model, sortable, with offers |
 | OpenRouter | `/openrouter/` | every OpenRouter model, sortable, with offers and `:free` |
-| Command Code | `/commandcode/` | every Command Code model, sortable, with deals and peak pricing |
-| Common | `/common/` | models offered by two or more providers. Default: all four. Toggle: two or more |
+| Common | `/common/` | models offered by two or more providers. Default: all three. Toggle: two or more |
 
 ## How it updates
 
 `.github/workflows/pages.yml` runs **hourly at :17 UTC**:
 
-1. `scripts/fetch_prices.py` pulls the four providers' prices and writes `site/data/*.json`.
+1. `scripts/fetch_prices.py` pulls the three providers' prices and writes `site/data/*.json`.
 2. `scripts/build_pages.py` rebuilds the pages.
 3. The refreshed data is committed back to `main` (only when something changed).
 4. `site/` is deployed to GitHub Pages.
@@ -46,7 +45,6 @@ python -m unittest scripts/test_fetch_prices.py -v   # parsing / matching tests
 | OpenRouter | `openrouter.ai/api/v1/models` (JSON) | expiry dates and `:free` variants |
 | Nous Portal | `inference-api.nousresearch.com/v1/models` (JSON) | the Portal site itself is bot-protected, so the inference API price list is used |
 | OpenCode Zen | pricing table on `opencode.ai/docs/zen` (HTML), IDs from `/zen/v1/models` | scraped; fails loudly if the layout changes |
-| Command Code | model table on `commandcode.ai/models` (HTML) | scraped; deal and peak-hour notes included |
 
 All prices are USD per 1M tokens. **Blended** = (3 × input + output) / 4, the default sort key.
 
@@ -60,5 +58,5 @@ Names are normalised (provider prefix, dots vs dashes, case). `:free` variants a
 
 ## Caveats
 
-- Scraped sources (Zen, Command Code) can break when the sites change. Check the stale notice.
+- Scraped sources (Zen) can break when the sites change. Check the stale notice.
 - Prices are list prices. Check the provider before you commit spend.

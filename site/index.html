@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>model/price :: who is cheapest right now</title>
-<meta name="description" content="Live, hourly price board for OpenCode Zen, Nous Portal, OpenRouter and Command Code.">
+<meta name="description" content="Live, hourly price board for OpenCode Zen, Nous Portal, and OpenRouter.">
 <meta name="color-scheme" content="dark">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2305070a'/%3E%3Ctext x='7' y='23' font-size='19' fill='%23c6ff3d'%3E%24%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="./assets/app.css">
@@ -21,7 +21,6 @@
       <a href="./zen/">Zen</a>
       <a href="./nous/">Nous</a>
       <a href="./openrouter/">OpenRouter</a>
-      <a href="./commandcode/">Cmd Code</a>
       <a href="./common/">Common</a>
     </nav>
     <div class="tools">
@@ -36,16 +35,16 @@
   <section class="hero hero-grid rise-in">
     <div>
       <p class="kicker">live price board · refreshed hourly</p>
-      <h1>Same models.<br><span class="grad">Four prices.</span><span class="cursor" aria-hidden="true"></span></h1>
-      <p class="lede">Compare OpenCode Zen, Nous Portal, OpenRouter and Command Code side by side. Every table sorts cheapest first, and every discount and price move is flagged on the side. Pick the cheapest door before you start the work.</p>
+      <h1>Same models.<br><span class="grad">Three prices.</span><span class="cursor" aria-hidden="true"></span></h1>
+      <p class="lede">Compare OpenCode Zen, Nous Portal, and OpenRouter side by side. Every table sorts cheapest first, and every discount and price move is flagged on the side. Pick the cheapest door before you start the work.</p>
       <div class="hero-meta"><span class="pill" id="home-sync">loading…</span></div>
     </div>
     <figure class="ladder" aria-labelledby="ladder-cap">
-      <figcaption id="ladder-cap"><span>the ladder</span> every model on all four providers, cheapest → priciest, blended $/1M, log scale</figcaption>
+      <figcaption id="ladder-cap"><span>the ladder</span> every model on all three providers, cheapest → priciest, blended $/1M, log scale</figcaption>
       <div id="ladder" class="ladder-svg"></div>
     </figure>
   </section>
-  <section class="grid four" aria-label="provider tables">
+  <section class="grid three" aria-label="provider tables">
     <a class="card rise-in" href="./zen/">
       <span class="idx">01 / opencode</span>
       <h2>OpenCode Zen</h2>
@@ -85,25 +84,12 @@
       </div>
       <span class="go">open the table →</span>
     </a>
-    <a class="card rise-in" href="./commandcode/">
-      <span class="idx">04 / command code</span>
-      <h2>Command Code</h2>
-      <p>Models on the Command Code table, with plan deals and peak-hour pricing.</p>
-      <div class="stat"><b id="commandcode-count">–</b><span>models priced</span></div>
-      <div class="row">
-        <span class="tag" id="commandcode-status">…</span>
-        <span class="pill">offers <b id="commandcode-offers">–</b></span>
-        <span class="pill">drops <b id="commandcode-drops">–</b></span>
-        <span class="pill">free <b id="commandcode-free">–</b></span>
-      </div>
-      <span class="go">open the table →</span>
-    </a>
     <a class="card feature rise-in d2" href="./common/">
       <div class="body">
-        <span class="idx">05 / on more than one provider</span>
+        <span class="idx">04 / on more than one provider</span>
         <h2>Same model, cheapest provider</h2>
-        <p>Every model offered by two or more of the four providers, with each provider's price. Default view is models on all four.</p>
-        <div class="stat"><b id="c-n4">–</b><span>on all four · <span id="c-n2">–</span> on two or more</span></div>
+        <p>Every model offered by two or more of the three providers, with each provider's price. Default view is models on all three.</p>
+        <div class="stat"><b id="c-n3">–</b><span>on all three · <span id="c-n2">–</span> on two or more</span></div>
         <p class="lede" style="margin:0;font-size:12.5px" id="c-cheap"></p>
         <span class="go">compare the models →</span>
       </div>

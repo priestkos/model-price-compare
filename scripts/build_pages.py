@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-off page generator: writes the six static HTML pages under site/.
+"""One-off page generator: writes the five static HTML pages under site/.
 The pages are plain HTML; all data is loaded at runtime from site/data/*.json."""
 from pathlib import Path
 
@@ -49,21 +49,18 @@ FOOT = '''<footer class="foot">
 
 PAGES = [
     ("home", "", "model/price :: who is cheapest right now",
-     "Live, hourly price board for OpenCode Zen, Nous Portal, OpenRouter and Command Code."),
+     "Live, hourly price board for OpenCode Zen, Nous Portal, and OpenRouter."),
     ("zen", "zen/", "model/price :: OpenCode Zen",
      "OpenCode Zen model prices, cheapest first, with offers and price drops."),
     ("nous", "nous/", "model/price :: Nous Portal",
      "Nous Portal model prices, cheapest first, with offers and price drops."),
     ("openrouter", "openrouter/", "model/price :: OpenRouter",
      "OpenRouter model prices, cheapest first, with offers and price drops."),
-    ("commandcode", "commandcode/", "model/price :: Command Code",
-     "Command Code model prices, cheapest first, with deals and price drops."),
     ("common", "common/", "model/price :: models on more than one provider",
-     "Models offered by two or more of the four providers, compared side by side."),
+     "Models offered by two or more of the three providers, compared side by side."),
 ]
 NAV = [("home", "Overview", ""), ("zen", "Zen", "zen/"), ("nous", "Nous", "nous/"),
-       ("openrouter", "OpenRouter", "openrouter/"), ("commandcode", "Cmd Code", "commandcode/"),
-       ("common", "Common", "common/")]
+       ("openrouter", "OpenRouter", "openrouter/"), ("common", "Common", "common/")]
 
 
 def nav_html(page: str, base: str) -> str:
@@ -148,7 +145,7 @@ def common_body() -> str:
         <label class="sr" for="q">search models</label>
         <input id="q" type="search" placeholder="filter by model…" autocomplete="off">
         <div class="seg" role="group" aria-label="which models">
-          <button type="button" data-mode="all4" aria-pressed="true">on all four · <span id="c4">–</span></button>
+          <button type="button" data-mode="all3" aria-pressed="true">on all three · <span id="c3">–</span></button>
           <button type="button" data-mode="two" aria-pressed="false">two or more · <span id="c2">–</span></button>
         </div>
         <div class="chips">
@@ -174,7 +171,7 @@ def common_body() -> str:
       <h2>offers &amp; drops · <span id="rail-count">0</span></h2>
       <ul id="rail-deals"></ul>
       <div class="notes">
-        <p>Models with an offer or a price drop on at least one provider, biggest first. Follows the “on all four / two or more” toggle.</p>
+        <p>Models with an offer or a price drop on at least one provider, biggest first. Follows the “on all three / two or more” toggle.</p>
         <p>Matched by model name across providers. A model counts only when the names resolve to the same key; the id line under each model shows that key.</p>
         <p>Big price = blended (3 × input + output) / 4; small line = input and output, per 1M tokens.</p>
       </div>
@@ -192,8 +189,6 @@ def home_body() -> str:
          "Nous inference API price list, for the models it serves.", "nous/"),
         ("openrouter", "03 / openrouter", "OpenRouter",
          "The full OpenRouter index, including :free variants and expiring models.", "openrouter/"),
-        ("commandcode", "04 / command code", "Command Code",
-         "Models on the Command Code table, with plan deals and peak-hour pricing.", "commandcode/"),
     ]
     parts = []
     for key, idx, name, desc, path in cards:
@@ -215,23 +210,23 @@ def home_body() -> str:
   <section class="hero hero-grid rise-in">
     <div>
       <p class="kicker">live price board · refreshed hourly</p>
-      <h1>Same models.<br><span class="grad">Four prices.</span><span class="cursor" aria-hidden="true"></span></h1>
-      <p class="lede">Compare OpenCode Zen, Nous Portal, OpenRouter and Command Code side by side. Every table sorts cheapest first, and every discount and price move is flagged on the side. Pick the cheapest door before you start the work.</p>
+      <h1>Same models.<br><span class="grad">Three prices.</span><span class="cursor" aria-hidden="true"></span></h1>
+      <p class="lede">Compare OpenCode Zen, Nous Portal, and OpenRouter side by side. Every table sorts cheapest first, and every discount and price move is flagged on the side. Pick the cheapest door before you start the work.</p>
       <div class="hero-meta"><span class="pill" id="home-sync">loading…</span></div>
     </div>
     <figure class="ladder" aria-labelledby="ladder-cap">
-      <figcaption id="ladder-cap"><span>the ladder</span> every model on all four providers, cheapest → priciest, blended $/1M, log scale</figcaption>
+      <figcaption id="ladder-cap"><span>the ladder</span> every model on all three providers, cheapest → priciest, blended $/1M, log scale</figcaption>
       <div id="ladder" class="ladder-svg"></div>
     </figure>
   </section>
-  <section class="grid four" aria-label="provider tables">
+  <section class="grid three" aria-label="provider tables">
 {cards_html}
     <a class="card feature rise-in d2" href="{{base}}common/">
       <div class="body">
-        <span class="idx">05 / on more than one provider</span>
+        <span class="idx">04 / on more than one provider</span>
         <h2>Same model, cheapest provider</h2>
-        <p>Every model offered by two or more of the four providers, with each provider's price. Default view is models on all four.</p>
-        <div class="stat"><b id="c-n4">–</b><span>on all four · <span id="c-n2">–</span> on two or more</span></div>
+        <p>Every model offered by two or more of the three providers, with each provider's price. Default view is models on all three.</p>
+        <div class="stat"><b id="c-n3">–</b><span>on all three · <span id="c-n2">–</span> on two or more</span></div>
         <p class="lede" style="margin:0;font-size:12.5px" id="c-cheap"></p>
         <span class="go">compare the models →</span>
       </div>
@@ -258,7 +253,6 @@ def main() -> None:
                 "zen": ("OpenCode Zen", "provider 01 · opencode", "Curated list, per-request billing"),
                 "nous": ("Nous Portal", "provider 02 · nous", "Nous inference API price list"),
                 "openrouter": ("OpenRouter", "provider 03 · openrouter", "Full index incl. :free"),
-                "commandcode": ("Command Code", "provider 04 · command code", "Table incl. plan deals & peak hours"),
             }[key]
             body = provider_body(t, k, b)
         head = HEAD.format(title=title, desc=desc, base=base, page=key, nav=nav_html(key, base))
