@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 *.tmp
 _site/
+# Local environment files (may contain secrets)
+.env
+.env.*
+!.env.example
